@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#120b12">
+  <meta name="description" content="Наша история">
+  <title>Мы вместе уже...</title>
+  <!-- Сделано с любовью ❤️ -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="background" aria-hidden="true">
+    <div class="collage collage-a" id="collageA"></div>
+    <div class="collage collage-b" id="collageB"></div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+  </div>
+
+  <main class="page">
+    <button class="sound-button" id="soundButton" type="button" aria-label="Включить музыку">♪</button>
+
+    <section class="hero">
+      <div class="eyebrow">Наша история продолжается</div>
+      <h1>Мы вместе уже<span class="accent">...</span></h1>
+
+      <div class="timer" id="timer" aria-label="Время вместе">
+        <div class="unit"><strong id="years">0</strong><span>лет</span></div>
+        <div class="unit"><strong id="days">0</strong><span>дней</span></div>
+        <div class="unit"><strong id="hours">00</strong><span>часов</span></div>
+        <div class="unit"><strong id="minutes">00</strong><span>минут</span></div>
+        <div class="unit"><strong id="seconds">00</strong><span>секунд</span></div>
+      </div>
+
+      <p class="subtitle" id="subtitle">И это число растёт каждую секунду.</p>
+      <div class="quote" id="quote"></div>
+
+      <div class="hint">
+        <span class="heart-dot">♥</span>
+        <span>Нажми в любом месте</span>
+      </div>
+    </section>
+
+    <section class="anniversary-card">
+      <div class="card-label">Следующая годовщина</div>
+      <div class="anniversary-date" id="anniversaryDate">—</div>
+      <div class="anniversary-countdown" id="anniversaryCountdown">—</div>
+    </section>
+  </main>
+
+  <audio id="music" loop preload="metadata">
+    <source id="musicSource" src="" type="audio/mpeg">
+  </audio>
+
+  <script src="config/config.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
