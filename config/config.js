@@ -5,15 +5,16 @@ const CONFIG = {
   music: "audio/music.mp3",
 
   images: [
-    "images/photo-01.svg",
-    "images/photo-02.svg",
-    "images/photo-03.svg",
-    "images/photo-04.svg",
-    "images/photo-05.svg",
-    "images/photo-06.svg",
-    "images/photo-07.svg",
-    "images/photo-08.svg",
-  ],
+             "images/Airbrush-IMAGE-ENHANCER-1782740772799-1782740772807.jpg",
+             "images/IMG_20261001_000333.jpg",
+             "images/photo_1_2026-10-07_01-37-10.jpg",
+             "images/photo_2_2026-10-07_01-37-10.jpg",
+             "images/photo_3_2026-10-07_01-37-10.jpg",
+             "images/photo_4_2026-10-07_01-37-10.jpg",
+             "images/photo_5_2026-10-07_01-37-10.jpg",
+             "images/photo_6_2026-10-07_01-37-10.jpg",
+             "images/photo_7_2026-10-07_01-37-10.jpg",
+           ],
 
   videos: [],
 
