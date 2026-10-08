@@ -1,65 +1,449 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
 
-:root { --mx:0px; --my:0px; --glass:rgba(255,255,255,.075); --border:rgba(255,255,255,.14); --text:#fff9fc; --muted:rgba(255,244,249,.7); --accent:#ff8eb5; }
-* { box-sizing:border-box; }
-html,body { margin:0; min-height:100%; }
-body { min-height:100vh; overflow-x:hidden; color:var(--text); background:#120b12; font-family:"Manrope",Arial,sans-serif; }
-button { font:inherit; }
-
-.background { position:fixed; inset:-5vh -5vw; z-index:0; overflow:hidden; background:radial-gradient(circle at 50% 50%,rgba(133,49,83,.25),transparent 45%),#120b12; }
-.collage { position:absolute; left:-2%; top:0; display:flex; gap:14px; width:max-content; height:100%; min-height:100vh; padding:2vh 0; opacity:.38; filter:saturate(.85) contrast(.95) blur(1.5px); animation:drift 90s linear infinite; will-change:transform; }
-.collage.reverse { top:30%; opacity:.17; transform:translateY(-10%); animation-name:driftReverse; }
-.collage img,.collage video { width:min(30vw,430px); height:96vh; object-fit:cover; border-radius:24px; flex:0 0 auto; box-shadow:0 20px 80px rgba(0,0,0,.4); }
-.collage.reverse img,.collage.reverse video { height:70vh; width:min(23vw,330px); margin-top:8vh; }
-@keyframes drift { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-@keyframes driftReverse { from{transform:translateX(-50%)} to{transform:translateX(0)} }
-.vignette { position:absolute; inset:0; background:linear-gradient(90deg,rgba(10,5,9,.82),rgba(10,5,9,.28) 45%,rgba(10,5,9,.8)),linear-gradient(0deg,rgba(10,5,9,.72),transparent 35%,rgba(10,5,9,.42)); }
-.grain { position:absolute; inset:0; opacity:.07; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E"); pointer-events:none; }
-
-.page { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 24px 50px; }
-.hero { width:min(1120px,100%); text-align:center; transform:translate(calc(var(--mx)*.18),calc(var(--my)*.18)); transition:transform .15s ease-out; }
-.eyebrow { display:inline-flex; align-items:center; gap:10px; margin-bottom:18px; color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.24em; text-transform:uppercase; }
-.eyebrow:before,.eyebrow:after { content:""; width:28px; height:1px; background:rgba(255,255,255,.32); }
-h1 { margin:0 0 32px; font-size:clamp(40px,7vw,82px); line-height:.98; letter-spacing:-.055em; font-weight:800; text-shadow:0 15px 60px rgba(0,0,0,.45); }
-.accent { color:var(--accent); font-family:"Playfair Display",Georgia,serif; font-style:italic; }
-.timer { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; }
-.unit { min-width:132px; padding:20px 20px 17px; border:1px solid var(--border); border-radius:22px; background:var(--glass); box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 22px 70px rgba(0,0,0,.18); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
-.unit strong { display:block; font-size:clamp(34px,5vw,58px); line-height:1; font-weight:800; letter-spacing:-.06em; font-variant-numeric:tabular-nums; }
-.unit span { display:block; margin-top:9px; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
-.subtitle { margin:28px 0 0; color:var(--muted); font-size:14px; }
-.quote { min-height:34px; margin:34px auto 0; max-width:620px; font-family:"Playfair Display",Georgia,serif; font-size:clamp(18px,2.4vw,26px); font-style:italic; line-height:1.45; opacity:0; transform:translateY(7px); transition:opacity .45s ease,transform .45s ease; }
-.quote.visible { opacity:1; transform:translateY(0); }
-.hint { display:flex; align-items:center; justify-content:center; gap:9px; margin-top:42px; color:rgba(255,255,255,.52); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
-.heart-dot { color:var(--accent); animation:heartbeat 1.8s ease-in-out infinite; }
-@keyframes heartbeat { 0%,100%{transform:scale(1)} 12%{transform:scale(1.2)} 24%{transform:scale(1)} }
-
-.sound-button { position:fixed; top:24px; right:24px; z-index:5; width:48px; height:48px; border:1px solid var(--border); border-radius:50%; color:white; background:rgba(20,12,20,.42); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); cursor:pointer; transition:transform .2s ease,background .2s ease; }
-.sound-button:hover { transform:scale(1.08); background:rgba(255,255,255,.12); }
-.sound-button.playing { color:var(--accent); }
-
-.anniversary-card { width:min(500px,calc(100% - 20px)); margin-top:70px; padding:20px 26px; border:1px solid rgba(255,255,255,.11); border-radius:20px; text-align:center; background:rgba(15,8,14,.32); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
-.card-label { color:rgba(255,255,255,.48); font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; }
-.anniversary-date { margin-top:8px; font-family:"Playfair Display",Georgia,serif; font-size:20px; }
-.anniversary-countdown { margin-top:5px; color:var(--accent); font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; }
-
-.floating-heart { position:fixed; z-index:20; pointer-events:none; color:var(--accent); font-size:20px; text-shadow:0 0 18px rgba(255,142,181,.7); animation:floatHeart var(--duration) ease-out forwards; }
-@keyframes floatHeart { 0%{opacity:0;transform:translate(-50%,-50%) scale(.3)} 15%{opacity:1;transform:translate(-50%,-60%) scale(var(--scale))} 100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% - 130px)) scale(.7)} }
-
-@media(max-width:760px) {
-    .page{padding:74px 14px 35px}
-    h1{margin-bottom:25px}
-    .timer{gap:7px}
-    .unit{min-width:calc(33.333% - 7px);padding:15px 8px 13px;border-radius:16px}
-    .unit strong{font-size:31px}
-    .unit span{margin-top:7px;font-size:8px;letter-spacing:.08em}
-    .unit:nth-child(4),.unit:nth-child(5){min-width:calc(50% - 5px)}
-    .collage{gap:8px;opacity:.25;filter:saturate(.75) blur(1px)}
-    .collage img,.collage video{width:62vw;border-radius:14px}
-    .collage.reverse{display:none}
-    .sound-button{top:16px;right:16px}
-    .anniversary-card{margin-top:48px}
+:root {
+  --mx: 0px;
+  --my: 0px;
+  --glass: rgba(255, 255, 255, 0.075);
+  --border: rgba(255, 255, 255, 0.14);
+  --text: #fff9fc;
+  --muted: rgba(255, 244, 249, 0.7);
+  --accent: #ff8eb5;
 }
-@media(prefers-reduced-motion:reduce) {
-    .collage,.collage.reverse,.heart-dot{animation:none}
-    .quote,.hero{transition:none}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--text);
+  background: #120b12;
+  font-family: "Manrope", Arial, sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+/* ==================== ФОН ==================== */
+.background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: radial-gradient(
+      circle at 50% 50%,
+      rgba(133, 49, 83, 0.3),
+      transparent 50%
+    ),
+    #120b12;
+}
+
+/* ==================== КОЛЛАЖ: ВЕРТИКАЛЬНЫЕ КОЛОНКИ ==================== */
+.collage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding: 0 20px;
+  overflow: hidden;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(26vw, 340px);
+  flex: 0 0 auto;
+  will-change: transform;
+}
+
+/* Три колонки — три разные скорости и направления,
+   чтобы не было монотонного «единого потока» */
+.column-a {
+  animation: scrollUp 90s linear infinite;
+}
+.column-b {
+  animation: scrollDown 110s linear infinite;
+}
+.column-c {
+  animation: scrollUp 130s linear infinite;
+}
+
+@keyframes scrollUp {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+@keyframes scrollDown {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Фото и видео: единый вертикальный формат 3:4,
+   яркие и насыщенные, с мягкой тенью */
+.column img,
+.column video {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  border-radius: 20px;
+  opacity: 0.85;
+  filter: saturate(1.15) contrast(1.06) brightness(1.08);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  /* Мягкая заглушка, пока фото грузится — никаких чёрных дырок */
+  background: linear-gradient(135deg, #2a1620, #1a0e17);
+}
+
+/* ==================== ВИНЬЕТКА (МЯГКАЯ) ==================== */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      ellipse 65% 60% at 50% 50%,
+      transparent 0%,
+      rgba(10, 5, 9, 0.5) 70%,
+      rgba(10, 5, 9, 0.82) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(10, 5, 9, 0.45),
+      transparent 30%,
+      transparent 70%,
+      rgba(10, 5, 9, 0.35)
+    );
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E");
+}
+
+/* ==================== КОНТЕНТ ==================== */
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px 50px;
+}
+
+.hero {
+  width: min(1120px, 100%);
+  text-align: center;
+  transform: translate(calc(var(--mx) * 0.18), calc(var(--my) * 0.18));
+  transition: transform 0.15s ease-out;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.eyebrow:before,
+.eyebrow:after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.32);
+}
+
+h1 {
+  margin: 0 0 32px;
+  font-size: clamp(40px, 7vw, 82px);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  font-weight: 800;
+  text-shadow: 0 15px 60px rgba(0, 0, 0, 0.55);
+}
+
+.accent {
+  color: var(--accent);
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+}
+
+/* ==================== ТАЙМЕР ==================== */
+.timer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.unit {
+  min-width: 132px;
+  padding: 20px 20px 17px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--glass);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 22px 70px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.unit strong {
+  display: block;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.unit span {
+  display: block;
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin: 28px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.quote {
+  min-height: 34px;
+  margin: 34px auto 0;
+  max-width: 620px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(18px, 2.4vw, 26px);
+  font-style: italic;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(7px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.quote.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 42px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heart-dot {
+  color: var(--accent);
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  12% {
+    transform: scale(1.2);
+  }
+  24% {
+    transform: scale(1);
+  }
+}
+
+/* ==================== КНОПКА ЗВУКА ==================== */
+.sound-button {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 5;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: white;
+  background: rgba(20, 12, 20, 0.42);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.sound-button:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.12);
+}
+.sound-button.playing {
+  color: var(--accent);
+}
+
+/* ==================== КАРТОЧКА ГОДОВЩИНЫ ==================== */
+.anniversary-card {
+  width: min(500px, calc(100% - 20px));
+  margin-top: 70px;
+  padding: 20px 26px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 20px;
+  text-align: center;
+  background: rgba(15, 8, 14, 0.32);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.card-label {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.anniversary-date {
+  margin-top: 8px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 20px;
+}
+
+.anniversary-countdown {
+  margin-top: 5px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==================== СЕРДЕЧКИ ПРИ КЛИКЕ ==================== */
+.floating-heart {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  color: var(--accent);
+  font-size: 20px;
+  text-shadow: 0 0 18px rgba(255, 142, 181, 0.7);
+  animation: floatHeart var(--duration) ease-out forwards;
+}
+@keyframes floatHeart {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -60%) scale(var(--scale));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% - 130px)) scale(0.7);
+  }
+}
+
+/* ==================== ПЛАНШЕТ ==================== */
+@media (max-width: 1100px) {
+  .column {
+    width: min(34vw, 300px);
+    gap: 14px;
+  }
+  .collage {
+    gap: 14px;
+  }
+}
+
+/* ==================== ТЕЛЕФОН ==================== */
+@media (max-width: 760px) {
+  .page {
+    padding: 74px 14px 35px;
+  }
+  h1 {
+    margin-bottom: 25px;
+  }
+
+  .timer {
+    gap: 7px;
+  }
+  .unit {
+    min-width: calc(33.333% - 7px);
+    padding: 15px 8px 13px;
+    border-radius: 16px;
+  }
+  .unit strong {
+    font-size: 31px;
+  }
+  .unit span {
+    margin-top: 7px;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+  .unit:nth-child(4),
+  .unit:nth-child(5) {
+    min-width: calc(50% - 5px);
+  }
+
+  /* На телефоне оставляем только центральную колонку,
+     она едет вниз и приглушена, чтобы текст читался */
+  .column-a,
+  .column-c {
+    display: none;
+  }
+  .collage {
+    padding: 0;
+    gap: 0;
+  }
+  .column {
+    width: 78vw;
+  }
+  .column img,
+  .column video {
+    border-radius: 16px;
+    opacity: 0.55;
+  }
+
+  .sound-button {
+    top: 16px;
+    right: 16px;
+  }
+  .anniversary-card {
+    margin-top: 48px;
+  }
+}
+
+/* ==================== ДОСТУПНОСТЬ ==================== */
+@media (prefers-reduced-motion: reduce) {
+  .column,
+  .heart-dot {
+    animation: none;
+  }
+  .quote,
+  .hero {
+    transition: none;
+  }
 }

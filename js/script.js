@@ -122,13 +122,27 @@
       ...(CONFIG.videos || []).map((src) => ({ type: "video", src })),
     ];
 
-    ["collageA", "collageB"].forEach((id, copyIndex) => {
-      const collage = $(id);
-      collage.innerHTML = "";
+    // На телефоне — только одна колонка (совпадает с CSS)
+    const isMobile = matchMedia("(max-width: 760px)").matches;
+    const columns = isMobile ? ["columnB"] : ["columnA", "columnB", "columnC"];
 
-      items.forEach((item, index) => {
+    // Раскидываем элементы по колонкам по кругу,
+    // чтобы рядом не оказались два одинаковых кадра
+    const buckets = columns.map(() => []);
+    items.forEach((item, i) => buckets[i % columns.length].push(item));
+
+    columns.forEach((id, colIndex) => {
+      const col = $(id);
+      col.innerHTML = "";
+
+      const itemsForCol = buckets[colIndex];
+      if (!itemsForCol.length) return;
+
+      // Дублируем ленту дважды — за счёт этого бесшовный цикл
+      const doubled = [...itemsForCol, ...itemsForCol];
+
+      doubled.forEach((item, index) => {
         let element;
-
         if (item.type === "video") {
           element = document.createElement("video");
           element.src = item.src;
@@ -144,13 +158,14 @@
           element.loading = index < 6 ? "eager" : "lazy";
           element.decoding = "async";
         }
-
         element.addEventListener("error", () => element.remove());
-        collage.appendChild(element);
+        col.appendChild(element);
       });
 
-      collage.style.animationDuration = `${CONFIG.collageSpeed || 90}s`;
-      if (copyIndex === 1) collage.classList.add("reverse");
+      // Скорость: одна общая настройка, три разных множителя
+      const base = CONFIG.collageSpeed || 90;
+      const speedByCol = isMobile ? [1] : [1, 1.2, 1.45];
+      col.style.animationDuration = `${base * speedByCol[colIndex]}s`;
     });
   }
 
