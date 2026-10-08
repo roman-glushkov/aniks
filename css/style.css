@@ -45,7 +45,7 @@ button {
     #120b12;
 }
 
-/* ==================== КОЛЛАЖ: ВЕРТИКАЛЬНЫЕ КОЛОНКИ ==================== */
+/* ==================== КОЛЛАЖ: БЕСШОВНАЯ ВЕРТИКАЛЬНАЯ ЛЕНТА ==================== */
 .collage {
   position: absolute;
   inset: 0;
@@ -59,43 +59,51 @@ button {
 .column {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 0;
   width: min(26vw, 340px);
   flex: 0 0 auto;
   will-change: transform;
+  --loop-height: 0px;
 }
 
-/* Три колонки — три разные скорости и направления,
-   чтобы не было монотонного «единого потока» */
 .column-a {
-  animation: scrollUp 90s linear infinite;
-}
-.column-b {
-  animation: scrollDown 110s linear infinite;
-}
-.column-c {
-  animation: scrollUp 130s linear infinite;
+  animation: scrollUp var(--animation-duration, 90s) linear infinite;
 }
 
+.column-b {
+  animation: scrollDown var(--animation-duration, 110s) linear infinite;
+}
+
+.column-c {
+  animation: scrollUp var(--animation-duration, 130s) linear infinite;
+}
+
+/*
+  В каждой колонке две абсолютно одинаковые последовательности.
+  JS вычисляет высоту одной последовательности в пикселях.
+  Поэтому в момент окончания цикла вторая копия находится ровно
+  там же, где первая была в начале — визуального скачка нет.
+*/
 @keyframes scrollUp {
   from {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateY(-50%);
-  }
-}
-@keyframes scrollDown {
-  from {
-    transform: translateY(-50%);
-  }
-  to {
-    transform: translateY(0);
+    transform: translate3d(0, calc(-1 * var(--loop-height)), 0);
   }
 }
 
-/* Фото и видео: единый вертикальный формат 3:4,
-   яркие и насыщенные, с мягкой тенью */
+@keyframes scrollDown {
+  from {
+    transform: translate3d(0, calc(-1 * var(--loop-height)), 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Фото и видео */
+
 .column img,
 .column video {
   width: 100%;
@@ -103,10 +111,10 @@ button {
   object-fit: cover;
   display: block;
   border-radius: 20px;
+  margin-bottom: 18px; /* отступ между кадрами */
   opacity: 0.85;
   filter: saturate(1.15) contrast(1.06) brightness(1.08);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
-  /* Мягкая заглушка, пока фото грузится — никаких чёрных дырок */
   background: linear-gradient(135deg, #2a1620, #1a0e17);
 }
 
@@ -371,10 +379,14 @@ h1 {
 @media (max-width: 1100px) {
   .column {
     width: min(34vw, 300px);
-    gap: 14px;
   }
   .collage {
     gap: 14px;
+  }
+  .column img,
+  .column video {
+    margin-bottom: 14px;
+    border-radius: 16px;
   }
 }
 
@@ -408,23 +420,19 @@ h1 {
     min-width: calc(50% - 5px);
   }
 
-  /* На телефоне оставляем только центральную колонку,
-     она едет вниз и приглушена, чтобы текст читался */
-  .column-a,
-  .column-c {
-    display: none;
-  }
+  /* Все три колонки остаются, просто узкие */
   .collage {
-    padding: 0;
-    gap: 0;
+    gap: 6px;
+    padding: 0 6px;
   }
   .column {
-    width: 78vw;
+    width: calc((100vw - 24px) / 3);
   }
   .column img,
   .column video {
-    border-radius: 16px;
-    opacity: 0.55;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    opacity: 0.7;
   }
 
   .sound-button {

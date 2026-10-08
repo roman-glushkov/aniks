@@ -122,27 +122,48 @@
       ...(CONFIG.videos || []).map((src) => ({ type: "video", src })),
     ];
 
-    // На телефоне — только одна колонка (совпадает с CSS)
-    const isMobile = matchMedia("(max-width: 760px)").matches;
-    const columns = isMobile ? ["columnB"] : ["columnA", "columnB", "columnC"];
+    if (!items.length) return;
 
-    // Раскидываем элементы по колонкам по кругу,
-    // чтобы рядом не оказались два одинаковых кадра
-    const buckets = columns.map(() => []);
-    items.forEach((item, i) => buckets[i % columns.length].push(item));
+    // Рандомный порядок при каждой загрузке.
+    const shuffled = [...items].sort(() => Math.random() - 0.5);
 
-    columns.forEach((id, colIndex) => {
+    // Три колонки всегда.
+    const columnIds = ["columnA", "columnB", "columnC"];
+
+    // Каждая фотография сначала попадает только в одну колонку.
+    const buckets = columnIds.map(() => []);
+    shuffled.forEach((item, i) => {
+      buckets[i % columnIds.length].push(item);
+    });
+
+    columnIds.forEach((id, colIndex) => {
       const col = $(id);
+      if (!col) return;
+
       col.innerHTML = "";
 
       const itemsForCol = buckets[colIndex];
       if (!itemsForCol.length) return;
 
-      // Дублируем ленту дважды — за счёт этого бесшовный цикл
-      const doubled = [...itemsForCol, ...itemsForCol];
+      // Делаем одну достаточно длинную последовательность.
+      const MIN_VISIBLE = 4;
+      const repeatBase = Math.max(
+        1,
+        Math.ceil(MIN_VISIBLE / itemsForCol.length)
+      );
 
-      doubled.forEach((item, index) => {
+      const loopItems = [];
+      for (let r = 0; r < repeatBase; r++) {
+        loopItems.push(...itemsForCol);
+      }
+
+      // ДВЕ одинаковые последовательности.
+      // Когда первая уходит вверх, вторая уже находится на её месте.
+      const finalItems = [...loopItems, ...loopItems];
+
+      finalItems.forEach((item) => {
         let element;
+
         if (item.type === "video") {
           element = document.createElement("video");
           element.src = item.src;
@@ -155,17 +176,43 @@
           element = document.createElement("img");
           element.src = item.src;
           element.alt = "";
-          element.loading = index < 6 ? "eager" : "lazy";
+          element.loading = "eager";
           element.decoding = "async";
         }
+
         element.addEventListener("error", () => element.remove());
         col.appendChild(element);
       });
 
-      // Скорость: одна общая настройка, три разных множителя
+      // Получаем реальную высоту одной копии в пикселях.
+      // Процентный translate больше не используется.
+      const setLoopHeight = () => {
+        const loopHeight = col.scrollHeight / 2;
+
+        if (loopHeight > 0) {
+          col.style.setProperty("--loop-height", `${loopHeight}px`);
+        }
+      };
+
+      setLoopHeight();
+
+      col.querySelectorAll("img, video").forEach((media) => {
+        media.addEventListener("load", setLoopHeight, { once: true });
+        media.addEventListener("loadedmetadata", setLoopHeight, {
+          once: true,
+        });
+      });
+
+      requestAnimationFrame(setLoopHeight);
+
+      // Разная скорость колонок сохраняется.
       const base = CONFIG.collageSpeed || 90;
-      const speedByCol = isMobile ? [1] : [1, 1.2, 1.45];
-      col.style.animationDuration = `${base * speedByCol[colIndex]}s`;
+      const multipliers = [1, 1.25, 1.5];
+
+      col.style.setProperty(
+        "--animation-duration",
+        `${base * multipliers[colIndex]}s`
+      );
     });
   }
 
