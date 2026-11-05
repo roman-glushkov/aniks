@@ -129,9 +129,6 @@ function renderHero(player) {
   $("#heroFullName").textContent =
     player.full_name || "Персональное игровое досье";
 
-  const emblemSpan = $("#playerEmblem")?.querySelector("span");
-  if (emblemSpan) emblemSpan.textContent = getInitials(player.full_name);
-
   const heroMonogram = $("#heroMonogram");
   if (heroMonogram) heroMonogram.textContent = getInitials(player.full_name);
 }
