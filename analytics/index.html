@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#080d14" />
     <meta
       name="description"
-      content="Персональная аналитика волейбольных матчей и игровых показателей спортсменки."
+      content="Персональная аналитика волейбольных матчей и игровых показателей спортсменов."
     />
     <title>Match Analytics — Player Dossier</title>
 
@@ -49,8 +49,14 @@
         <div class="hero-grid" aria-hidden="true"></div>
         <div class="hero-content">
           <p class="eyebrow hero-eyebrow">
-            <span class="eyebrow-line"></span> ATHLETE PERFORMANCE / 2026
+            <span class="eyebrow-line"></span> TEAM PERFORMANCE / 2026
           </p>
+
+          <!-- Новый переключатель игроков -->
+          <div class="player-switcher" id="playerSwitcher">
+            <!-- Кнопки генерируются через JS -->
+          </div>
+
           <h1 id="heroTitle">
             <span id="heroFirstName">PLAYER</span
             ><span class="hero-title-outline">MATCH</span
@@ -64,9 +70,6 @@
           <div class="hero-actions">
             <a class="button button-primary" href="#match"
               >Смотреть статистику <span aria-hidden="true">↘</span></a
-            >
-            <a class="text-link" href="#profile"
-              >Изучить профиль <span aria-hidden="true">↗</span></a
             >
           </div>
         </div>
@@ -98,8 +101,21 @@
 
         <article class="profile-card glass-panel reveal-item">
           <div class="profile-identity">
-            <div class="player-photo" aria-hidden="true">
-              <img src="hero.jpg" alt="Анна Тубаева" />
+            <!-- Блок с фото -->
+            <div class="player-photo" id="playerPhotoWrap" aria-hidden="true">
+              <img
+                id="playerPhoto"
+                src=""
+                alt="Фото игрока"
+                onerror="this.style.display='none'; document.getElementById('photoFallback').style.display='flex';"
+              />
+              <div
+                id="photoFallback"
+                class="photo-fallback"
+                style="display: none"
+              >
+                —
+              </div>
               <i></i>
             </div>
             <div class="identity-copy">

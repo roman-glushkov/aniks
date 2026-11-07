@@ -18,27 +18,31 @@ const STAT_ICONS = {
   Прием: "◎",
   Доводка: "⌖",
   Атака: "↟",
+  Удар: "↟",
   "Атака в аут/сетку": "×",
   Забила: "◆",
+  Забил: "◆",
   Подача: "⌁",
   "Не подача": "—",
   Эйс: "✦",
   "Защитные действия": "◈",
+  Защита: "◈",
   Блок: "▥",
   "Плохая защита": "!",
 };
 
 const RADAR_KEYS = [
   "Атака",
-  "Подача",
-  "Прием",
-  "Защитные действия",
+  "Забито мячей",
+  "Полезные действия в защите",
+  "Эйсы",
   "Блок",
-  "Перекидка",
 ];
 const DOUGHNUT_KEYS = [
   "Атака",
+  "Удар",
   "Подача",
+  "Защита",
   "Защитные действия",
   "Прием",
   "Перекидка",
@@ -53,11 +57,14 @@ const CHART_COLORS = [
   "#b4d9e8",
   "#4dbaa9",
   "#8b9aaa",
+  "#a284f4",
+  "#f4a284",
 ];
 
 let radarInstance = null;
 let doughnutInstance = null;
 let currentData = null;
+let currentPlayerIndex = 0;
 let currentMatchIndex = 0;
 
 const $ = (selector) => document.querySelector(selector);
@@ -84,69 +91,107 @@ async function loadData() {
 }
 
 function validateData(data) {
-  if (
-    !data ||
-    typeof data !== "object" ||
-    !data.player ||
-    !Array.isArray(data.matches)
-  ) {
-    throw new Error(
-      "Некорректная структура data.json. Нужны объекты player и массив matches."
-    );
-  }
-  if (data.matches.length === 0) {
-    throw new Error("В data.json пока нет матчей в массиве matches.");
-  }
-  for (const [index, match] of data.matches.entries()) {
-    if (
-      !match ||
-      typeof match !== "object" ||
-      !match.stats ||
-      typeof match.stats !== "object"
-    ) {
-      throw new Error(`У матча №${index + 1} отсутствует объект stats.`);
-    }
+  if (!data || typeof data !== "object" || !Array.isArray(data.players)) {
+    throw new Error("Некорректная структура data.json. Нужен массив players.");
   }
 }
 
 function renderApp(data) {
-  renderHero(data.player);
-  renderProfile(data.player);
-  renderMatchSelector(data.matches);
-  renderMatch(
-    data.matches[currentMatchIndex],
-    currentMatchIndex,
-    data.matches.length
-  );
+  renderPlayerSwitcher(data.players);
+  switchPlayer(0);
+}
+
+// Создает кнопки переключения игроков
+function renderPlayerSwitcher(players) {
+  const switcher = $("#playerSwitcher");
+  switcher.replaceChildren();
+
+  players.forEach((player, index) => {
+    const btn = document.createElement("button");
+    btn.className = `switch-btn ${index === 0 ? "active" : ""}`;
+    btn.dataset.index = index;
+    btn.textContent = player.short_name || "Player";
+
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll(".switch-btn")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      switchPlayer(index);
+    });
+
+    switcher.append(btn);
+  });
+}
+
+// Переключает всё досье на выбранного игрока
+function switchPlayer(index) {
+  currentPlayerIndex = index;
+  currentMatchIndex = 0;
+  const player = currentData.players[index];
+
+  renderHero(player);
+  renderProfile(player);
+  renderMatchSelector(player.matches);
+
+  if (player.matches && player.matches.length > 0) {
+    renderMatch(player.matches[0], 0, player.matches.length);
+  } else {
+    // Очистка, если нет матчей
+    $("#matchName").textContent = "Нет данных о матчах";
+    $("#statsGrid").replaceChildren();
+  }
 }
 
 function renderHero(player) {
-  const firstName =
-    String(player.full_name || "PLAYER")
-      .trim()
-      .split(/\s+/)[1] || String(player.full_name || "PLAYER");
+  // Берем имя (второе слово в ФИО)
+  const nameParts = String(player.full_name || "PLAYER")
+    .trim()
+    .split(/\s+/);
+  const firstName = nameParts[1] || nameParts[0] || "PLAYER";
+
   $("#heroFirstName").textContent = firstName.toUpperCase();
   $("#heroFullName").textContent =
     player.full_name || "Персональное игровое досье";
 
-  const heroMonogram = $("#heroMonogram");
-  if (heroMonogram) heroMonogram.textContent = getInitials(player.full_name);
-}
-
-function getInitials(fullName) {
-  return String(fullName || "P")
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
+  const monogram = $("#heroMonogram");
+  if (monogram) {
+    // Делаем инициалы (например, АТ или РГ)
+    const initials = nameParts
+      .slice(0, 2)
+      .map((p) => p[0])
+      .join("")
+      .toUpperCase();
+    monogram.textContent = initials || "P.";
+  }
 }
 
 function renderProfile(player) {
   $("#profileName").textContent = player.full_name || "Имя не указано";
   $("#profilePosition").textContent = player.position || "Амплуа не указано";
-  $("#profileExperience").textContent = player.experience || "Стаж не указан";
+  $("#profileExperience").textContent =
+    player.experience && player.experience !== "—"
+      ? player.experience
+      : "Стаж не указан";
+
+  // Установка фото
+  const photo = $("#playerPhoto");
+  const fallback = $("#photoFallback");
+  if (player.photo) {
+    photo.src = player.photo;
+    photo.style.display = "block";
+    fallback.style.display = "none";
+    // Если фото не загрузится (например, нет roma.jpg), сработает onerror в HTML
+    fallback.textContent = player.short_name
+      ? player.short_name.substring(0, 2).toUpperCase()
+      : "?";
+  } else {
+    photo.style.display = "none";
+    fallback.style.display = "flex";
+    fallback.textContent = player.short_name
+      ? player.short_name.substring(0, 2).toUpperCase()
+      : "?";
+  }
 
   const facts = $("#profileFacts");
   facts.replaceChildren();
@@ -154,7 +199,10 @@ function renderProfile(player) {
   PROFILE_FIELDS.forEach((field) => {
     const rawValue = player[field.key];
     const value =
-      rawValue === null || rawValue === undefined || rawValue === ""
+      rawValue === null ||
+      rawValue === undefined ||
+      rawValue === "" ||
+      rawValue === "—"
         ? "—"
         : `${rawValue}${field.suffix ? ` ${field.suffix}` : ""}`;
     const wrapper = document.createElement("div");
@@ -173,6 +221,11 @@ function renderMatchSelector(matches) {
   const select = $("#matchSelect");
   select.replaceChildren();
 
+  if (!matches || matches.length === 0) {
+    wrapper.hidden = true;
+    return;
+  }
+
   matches.forEach((match, index) => {
     const option = document.createElement("option");
     option.value = String(index);
@@ -183,12 +236,18 @@ function renderMatchSelector(matches) {
   });
 
   wrapper.hidden = matches.length < 2;
-  select.addEventListener("change", (event) => {
+
+  // Удаляем старый обработчик, чтобы не дублировался при переключении игроков
+  const newSelect = select.cloneNode(true);
+  select.parentNode.replaceChild(newSelect, select);
+
+  newSelect.addEventListener("change", (event) => {
     currentMatchIndex = Number(event.target.value);
+    const player = currentData.players[currentPlayerIndex];
     renderMatch(
-      currentData.matches[currentMatchIndex],
+      player.matches[currentMatchIndex],
       currentMatchIndex,
-      currentData.matches.length
+      player.matches.length
     );
   });
 }
@@ -270,11 +329,44 @@ function renderCharts(stats) {
     return;
   }
 
+  const normalizedStats = { ...stats };
+
+  // Приводим все к единому виду для радара
+  if (
+    normalizedStats["Удар"] !== undefined &&
+    normalizedStats["Атака"] === undefined
+  ) {
+    normalizedStats["Атака"] = normalizedStats["Удар"];
+  }
+  if (normalizedStats["Забила"] !== undefined) {
+    normalizedStats["Забито мячей"] = normalizedStats["Забила"];
+  }
+  if (normalizedStats["Забил"] !== undefined) {
+    normalizedStats["Забито мячей"] = normalizedStats["Забил"];
+  }
+  if (normalizedStats["Защитные действия"] !== undefined) {
+    normalizedStats["Полезные действия в защите"] =
+      normalizedStats["Защитные действия"];
+  }
+  if (normalizedStats["Защита"] !== undefined) {
+    normalizedStats["Полезные действия в защите"] = normalizedStats["Защита"];
+  }
+
+  // Нормализация для Эйсов
+  if (normalizedStats["Эйс"] !== undefined) {
+    normalizedStats["Эйсы"] = normalizedStats["Эйс"];
+  }
+  if (normalizedStats["Эйсы"] !== undefined) {
+    normalizedStats["Эйсы"] = normalizedStats["Эйсы"];
+  }
+
+  // Строим данные для радара
   const radarValues = RADAR_KEYS.map((key) =>
-    typeof stats[key] === "number" ? stats[key] : null
+    typeof normalizedStats[key] === "number" ? normalizedStats[key] : 0
   );
   const maxRadarValue =
     Math.max(10, ...radarValues.filter(Number.isFinite)) * 1.2;
+
   radarInstance = new Chart(radarCanvas, {
     type: "radar",
     data: {
@@ -329,9 +421,34 @@ function renderCharts(stats) {
     },
   });
 
-  const doughnutEntries = DOUGHNUT_KEYS.filter(
-    (key) => typeof stats[key] === "number" && stats[key] > 0
-  ).map((key) => ({ label: key, value: stats[key] }));
+  // Строим данные для круговой диаграммы (склеиваем одинаковые по смыслу действия)
+  const DOUGHNUT_MAP = {
+    Атака: "Атака",
+    Удар: "Атака",
+    Забила: "Забито мячей",
+    Забил: "Забито мячей",
+    Подача: "Подача",
+    "Защитные действия": "Полезные действия в защите",
+    Защита: "Полезные действия в защите",
+    Прием: "Прием",
+    Перекидка: "Перекидка",
+    Блок: "Блок",
+    Скидка: "Скидка",
+  };
+
+  const doughnutEntries = [];
+  Object.entries(stats).forEach(([label, value]) => {
+    if (typeof value === "number" && value > 0) {
+      const mappedLabel = DOUGHNUT_MAP[label] || label;
+      const existing = doughnutEntries.find((e) => e.label === mappedLabel);
+      if (existing) {
+        existing.value += value;
+      } else {
+        doughnutEntries.push({ label: mappedLabel, value: value });
+      }
+    }
+  });
+
   const total = doughnutEntries.reduce((sum, entry) => sum + entry.value, 0);
   $("#chartTotal").textContent = formatValue(total);
 
@@ -422,19 +539,6 @@ function initRevealAnimations() {
       }
     );
   });
-  window.gsap.fromTo(
-    ".stat-card",
-    { y: 25, opacity: 0, scale: 0.97 },
-    {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      duration: 0.65,
-      stagger: 0.055,
-      ease: "power3.out",
-      scrollTrigger: { trigger: "#statsGrid", start: "top 84%", once: true },
-    }
-  );
 }
 
 function initAmbientCanvas() {
@@ -563,7 +667,7 @@ function showLoadError(error) {
   const panel = $("#loadError");
   $(
     "#loadErrorMessage"
-  ).textContent = `${error.message}. Запустите index.html через локальный сервер (например, Live Server в VS Code), чтобы fetch('./data.json') работал корректно.`;
+  ).textContent = `${error.message}. Запустите index.html через локальный сервер, чтобы fetch('./data.json') работал.`;
   panel.hidden = false;
 }
 

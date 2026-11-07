@@ -164,6 +164,35 @@ select {
   gap: 28px;
   margin-top: 34px;
 }
+
+/* НОВЫЕ СТИЛИ ДЛЯ ПЕРЕКЛЮЧАТЕЛЯ */
+.player-switcher {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+.switch-btn {
+  padding: 8px 24px;
+  border: 1px solid var(--line-strong);
+  border-radius: 30px;
+  background: rgba(17, 27, 40, 0.5);
+  color: var(--muted);
+  font: 600 12px var(--font-display);
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.switch-btn:hover {
+  border-color: rgba(84, 230, 242, 0.5);
+  color: var(--text);
+}
+.switch-btn.active {
+  background: var(--cyan-soft);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 15px rgba(84, 230, 242, 0.15);
+}
+
 .button {
   display: inline-flex;
   min-height: 48px;
@@ -189,19 +218,7 @@ select {
 .button-primary span {
   font-size: 16px;
 }
-.text-link {
-  color: #c0ccd5;
-  font-size: 11px;
-  font-weight: 600;
-  transition: color 0.2s ease;
-}
-.text-link span {
-  margin-left: 7px;
-  color: var(--cyan);
-}
-.text-link:hover {
-  color: var(--cyan);
-}
+
 .hero-visual {
   position: absolute;
   top: 50%;
@@ -363,47 +380,33 @@ select {
   align-items: flex-start;
   gap: 22px;
 }
-.player-emblem {
+
+/* Стили для фото и заглушки */
+.player-photo {
   position: relative;
-  display: grid;
   width: 96px;
   height: 112px;
   flex: 0 0 auto;
-  place-items: center;
   overflow: hidden;
   border: 1px solid rgba(84, 230, 242, 0.28);
   border-radius: 5px;
-  background: linear-gradient(
-      145deg,
-      rgba(84, 230, 242, 0.1),
-      rgba(84, 230, 242, 0.015)
-    ),
-    repeating-linear-gradient(
-      135deg,
-      transparent 0 12px,
-      rgba(84, 230, 242, 0.04) 12px 13px
-    );
+  background: #0c131d;
+  box-shadow: 0 0 20px rgba(84, 230, 242, 0.1);
 }
-.player-emblem::before,
-.player-emblem::after {
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  border: 1px solid rgba(84, 230, 242, 0.14);
-  border-radius: 50%;
-  content: "";
+.player-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  filter: grayscale(20%) contrast(1.1) sepia(10%) hue-rotate(160deg)
+    brightness(0.9);
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
-.player-emblem::after {
-  width: 75px;
-  height: 75px;
+.profile-card:hover .player-photo img {
+  filter: grayscale(0%) contrast(1.05) sepia(0%) hue-rotate(0deg) brightness(1);
+  transform: scale(1.05);
 }
-.player-emblem span {
-  z-index: 1;
-  color: var(--text);
-  font: 700 29px var(--font-display);
-  letter-spacing: -0.08em;
-}
-.player-emblem i {
+.player-photo i {
   position: absolute;
   right: 9px;
   bottom: 9px;
@@ -414,6 +417,18 @@ select {
   background: var(--green);
   box-shadow: 0 0 10px var(--green);
 }
+/* Сама заглушка (если нет фото) */
+.photo-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 28px var(--font-display);
+  color: var(--cyan);
+  background: radial-gradient(circle, rgba(84, 230, 242, 0.1), transparent);
+}
+
 .identity-copy {
   min-width: 0;
   padding-top: 4px;
@@ -886,12 +901,9 @@ select {
   .profile-identity {
     gap: 15px;
   }
-  .player-emblem {
+  .player-photo {
     width: 75px;
     height: 91px;
-  }
-  .player-emblem span {
-    font-size: 24px;
   }
   .identity-copy h3 {
     font-size: 18px;
@@ -1013,49 +1025,5 @@ select {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/* Заменили старый квадрат с буквами на фото */
-.player-photo {
-  position: relative;
-  width: 96px;
-  height: 112px;
-  flex: 0 0 auto;
-  overflow: hidden;
-  border: 1px solid rgba(84, 230, 242, 0.28);
-  border-radius: 5px;
-  background: #0c131d;
-  /* Легкий неоновый отсвет */
-  box-shadow: 0 0 20px rgba(84, 230, 242, 0.1);
-}
-
-.player-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 20%; /* Чтобы лицо не обрезалось */
-
-  transition: filter 0.3s ease, transform 0.3s ease;
-}
-
-/* Зеленая точка-статус (как было раньше) */
-.player-photo i {
-  position: absolute;
-  right: 9px;
-  bottom: 9px;
-  z-index: 2;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 10px var(--green);
-}
-
-/* Мобильная версия фото */
-@media (max-width: 700px) {
-  .player-photo {
-    width: 75px;
-    height: 91px;
   }
 }
