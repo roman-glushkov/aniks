@@ -72,6 +72,21 @@ const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
 ).matches;
 
+// --- НОВАЯ ФУНКЦИЯ РАСЧЕТА РЕЙТИНГА ---
+function calculateRating(stats) {
+  const get = (key) => (typeof stats[key] === "number" ? stats[key] : 0);
+
+  const scored = get("Забила") || get("Забил") || 0;
+  const attackOut = get("Атака в аут/сетку");
+  const aces = get("Эйс") || get("Эйсы") || 0;
+  const serveMiss = get("Не подача");
+  const defense = get("Защитные действия") || get("Защита") || 0;
+  const badDefense = get("Плохая защита");
+
+  return scored - attackOut + aces - serveMiss + defense - badDefense;
+}
+// --------------------------------------
+
 async function loadData() {
   try {
     const response = await fetch("./data.json", { cache: "no-store" });
@@ -101,7 +116,6 @@ function renderApp(data) {
   switchPlayer(0);
 }
 
-// Создает кнопки переключения игроков
 function renderPlayerSwitcher(players) {
   const switcher = $("#playerSwitcher");
   switcher.replaceChildren();
@@ -124,7 +138,6 @@ function renderPlayerSwitcher(players) {
   });
 }
 
-// Переключает всё досье на выбранного игрока
 function switchPlayer(index) {
   currentPlayerIndex = index;
   currentMatchIndex = 0;
@@ -137,14 +150,12 @@ function switchPlayer(index) {
   if (player.matches && player.matches.length > 0) {
     renderMatch(player.matches[0], 0, player.matches.length);
   } else {
-    // Очистка, если нет матчей
     $("#matchName").textContent = "Нет данных о матчах";
     $("#statsGrid").replaceChildren();
   }
 }
 
 function renderHero(player) {
-  // Берем имя (второе слово в ФИО)
   const nameParts = String(player.full_name || "PLAYER")
     .trim()
     .split(/\s+/);
@@ -156,7 +167,6 @@ function renderHero(player) {
 
   const monogram = $("#heroMonogram");
   if (monogram) {
-    // Делаем инициалы (например, АТ или РГ)
     const initials = nameParts
       .slice(0, 2)
       .map((p) => p[0])
@@ -174,6 +184,23 @@ function renderProfile(player) {
       ? player.experience
       : "Стаж не указан";
 
+  // Подсчет общего рейтинга
+  let totalRating = 0;
+  if (player.matches && player.matches.length > 0) {
+    player.matches.forEach((match) => {
+      totalRating += calculateRating(match.stats);
+    });
+  }
+
+  // Вывод общего рейтинга в профиль
+  const ratingEl = $("#profileTotalRating");
+  ratingEl.textContent = `RATING: ${totalRating > 0 ? "+" : ""}${totalRating}`;
+
+  if (totalRating > 0) ratingEl.className = "tag tag-rating rating-positive";
+  else if (totalRating < 0)
+    ratingEl.className = "tag tag-rating rating-negative";
+  else ratingEl.className = "tag tag-rating";
+
   // Установка фото
   const photo = $("#playerPhoto");
   const fallback = $("#photoFallback");
@@ -181,7 +208,6 @@ function renderProfile(player) {
     photo.src = player.photo;
     photo.style.display = "block";
     fallback.style.display = "none";
-    // Если фото не загрузится (например, нет roma.jpg), сработает onerror в HTML
     fallback.textContent = player.short_name
       ? player.short_name.substring(0, 2).toUpperCase()
       : "?";
@@ -237,7 +263,6 @@ function renderMatchSelector(matches) {
 
   wrapper.hidden = matches.length < 2;
 
-  // Удаляем старый обработчик, чтобы не дублировался при переключении игроков
   const newSelect = select.cloneNode(true);
   select.parentNode.replaceChild(newSelect, select);
 
@@ -262,6 +287,15 @@ function renderMatch(match, index, total) {
     "0"
   )} / ${String(total).padStart(2, "0")}`;
   $("#statsCount").textContent = `${Object.keys(match.stats).length} METRICS`;
+
+  // Вывод рейтинга за матч
+  const matchRating = calculateRating(match.stats);
+  const ratingEl = $("#matchRating");
+  ratingEl.textContent = `RATING: ${matchRating > 0 ? "+" : ""}${matchRating}`;
+
+  if (matchRating > 0) ratingEl.className = "match-rating rating-positive";
+  else if (matchRating < 0) ratingEl.className = "match-rating rating-negative";
+  else ratingEl.className = "match-rating";
 
   renderStats(match.stats);
   renderCharts(match.stats);
@@ -331,7 +365,6 @@ function renderCharts(stats) {
 
   const normalizedStats = { ...stats };
 
-  // Приводим все к единому виду для радара
   if (
     normalizedStats["Удар"] !== undefined &&
     normalizedStats["Атака"] === undefined
@@ -352,7 +385,6 @@ function renderCharts(stats) {
     normalizedStats["Полезные действия в защите"] = normalizedStats["Защита"];
   }
 
-  // Нормализация для Эйсов
   if (normalizedStats["Эйс"] !== undefined) {
     normalizedStats["Эйсы"] = normalizedStats["Эйс"];
   }
@@ -360,7 +392,6 @@ function renderCharts(stats) {
     normalizedStats["Эйсы"] = normalizedStats["Эйсы"];
   }
 
-  // Строим данные для радара
   const radarValues = RADAR_KEYS.map((key) =>
     typeof normalizedStats[key] === "number" ? normalizedStats[key] : 0
   );
@@ -421,7 +452,6 @@ function renderCharts(stats) {
     },
   });
 
-  // Строим данные для круговой диаграммы (склеиваем одинаковые по смыслу действия)
   const DOUGHNUT_MAP = {
     Атака: "Атака",
     Удар: "Атака",

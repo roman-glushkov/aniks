@@ -165,7 +165,6 @@ select {
   margin-top: 34px;
 }
 
-/* НОВЫЕ СТИЛИ ДЛЯ ПЕРЕКЛЮЧАТЕЛЯ */
 .player-switcher {
   display: flex;
   gap: 10px;
@@ -381,7 +380,6 @@ select {
   gap: 22px;
 }
 
-/* Стили для фото и заглушки */
 .player-photo {
   position: relative;
   width: 96px;
@@ -417,7 +415,6 @@ select {
   background: var(--green);
   box-shadow: 0 0 10px var(--green);
 }
-/* Сама заглушка (если нет фото) */
 .photo-fallback {
   width: 100%;
   height: 100%;
@@ -469,6 +466,27 @@ select {
   color: var(--green);
   background: rgba(138, 240, 193, 0.05);
 }
+
+/* СТИЛИ ДЛЯ РЕЙТИНГА В ПРОФИЛЕ */
+.tag-rating {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+.tag-rating.rating-positive {
+  border-color: rgba(138, 240, 193, 0.4);
+  color: var(--green);
+  background: rgba(138, 240, 193, 0.1);
+  box-shadow: 0 0 10px rgba(138, 240, 193, 0.15);
+}
+.tag-rating.rating-negative {
+  border-color: rgba(255, 107, 107, 0.4);
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.15);
+}
+
 .profile-divider {
   width: 1px;
   min-height: 130px;
@@ -607,6 +625,30 @@ select {
   letter-spacing: -0.07em;
   text-shadow: 0 0 30px rgba(84, 230, 242, 0.2);
 }
+
+/* СТИЛИ ДЛЯ РЕЙТИНГА В МАТЧЕ */
+.match-rating {
+  margin-top: 8px;
+  padding: 4px 10px;
+  font: 700 10px var(--font-display);
+  letter-spacing: 0.1em;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+.match-rating.rating-positive {
+  color: var(--green);
+  border-color: rgba(138, 240, 193, 0.4);
+  background: rgba(138, 240, 193, 0.08);
+}
+.match-rating.rating-negative {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.4);
+  background: rgba(255, 107, 107, 0.08);
+}
+
 .stats-toolbar {
   display: flex;
   align-items: flex-end;
@@ -948,6 +990,11 @@ select {
   }
   .score-caption {
     font-size: 7px;
+  }
+
+  .match-rating {
+    margin-top: 5px;
+    font-size: 9px;
   }
 
   .stats-toolbar {

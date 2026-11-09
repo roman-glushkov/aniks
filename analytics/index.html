@@ -52,7 +52,7 @@
             <span class="eyebrow-line"></span> TEAM PERFORMANCE / 2026
           </p>
 
-          <!-- Новый переключатель игроков -->
+          <!-- Переключатель игроков -->
           <div class="player-switcher" id="playerSwitcher">
             <!-- Кнопки генерируются через JS -->
           </div>
@@ -123,8 +123,12 @@
               <h3 id="profileName">Загрузка профиля…</h3>
               <p class="identity-position" id="profilePosition">—</p>
               <div class="identity-tags">
-                <span class="tag tag-active">ACTIVE PLAYER</span
-                ><span class="tag" id="profileExperience">—</span>
+                <span class="tag tag-active">ACTIVE PLAYER</span>
+                <span class="tag" id="profileExperience">—</span>
+                <!-- НОВЫЙ ТЕГ РЕЙТИНГА -->
+                <span class="tag tag-rating" id="profileTotalRating"
+                  >RATING: 0</span
+                >
               </div>
             </div>
           </div>
@@ -167,9 +171,11 @@
             <p class="match-subtitle">INDIVIDUAL PERFORMANCE REPORT</p>
           </div>
           <div class="match-score-wrap">
-            <span class="score-caption">FINAL SCORE</span
-            ><strong class="match-score" id="matchScore">—</strong
-            ><span class="score-caption" id="matchOrdinal">MATCH 01</span>
+            <span class="score-caption">FINAL SCORE</span>
+            <strong class="match-score" id="matchScore">—</strong>
+            <span class="score-caption" id="matchOrdinal">MATCH 01</span>
+            <!-- НОВЫЙ БЛОК РЕЙТИНГА -->
+            <div class="match-rating" id="matchRating">RATING: 0</div>
           </div>
         </article>
 
